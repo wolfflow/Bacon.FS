@@ -31,7 +31,7 @@ createMethod = (name, f) ->
 for k in methods
   createMethod(k, fs[k])
 
-# fs: a few exceptions
+# fs: some other
 
 Bacon.FS.write = (fd, buffer, offset, length, position) ->
   Bacon.fromCallback (handler) ->
@@ -54,9 +54,9 @@ Bacon.FS.read = (fd, buffer, offset, length, position) ->
     fs.read(fd, buffer, offset, length, position, callback)
 
 
-Bacon.FS.watch = (a...) ->
+Bacon.FS.watchFile = (a...) ->
   Bacon.fromCallback (handler) ->
-    fs.watch(a..., (curr,prev) ->
+    fs.watchFile(a..., (curr,prev) ->
       handler(new Bacon.Next({curr, prev}))
     )
 
