@@ -42,7 +42,7 @@ Bacon.FS.close = (fd) ->
         handler(new Bacon.Next(fd))
     )
 
-Bacon.FS.write = (fd, buffer, offset, length, position, callback) ->
+Bacon.FS.write = (fd, buffer, offset, length, position) ->
   Bacon.fromCallback (handler) ->
     callback = (err, written, innerBuffer) ->
       if err
