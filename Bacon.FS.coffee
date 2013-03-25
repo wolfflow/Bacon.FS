@@ -8,7 +8,7 @@ exports.Bacon = Bacon
 Bacon.FS = {}
 nop = ->
 
-# common methods
+  # common methods
 methods = [
   "rename", "truncate", "chmod"
   "stat", "lstat", "fstat"
@@ -20,17 +20,18 @@ methods = [
 ]
 
 for name in methods
-  Bacon.FS[name] = (args...) -> Bacon.fromNodeCallback("fs.#{name}", args...)
+  Bacon.FS[name] = (args...) -> Bacon.fromNodeCallback("fs.#{name}", args...).toProperty()
 
 
 Bacon.FS.open = (path, flags, mode) ->
-  Bacon.fromCallback (handler) ->
+  Bacon.fromBinder (handler) ->
     fs.open(path, flags, mode, (err, fd) ->
       if err
         handler(new Bacon.Error(err))
       else
         handler(new Bacon.Next(fd))
     )
+    (-> fs.close(fd))
 
 Bacon.FS.close = (fd) ->
   Bacon.fromCallback (handler) ->
@@ -42,7 +43,7 @@ Bacon.FS.close = (fd) ->
     )
 
 Bacon.FS.write = (fd, buffer, offset, length, position, callback) ->
-  Bacon.fromBinder (handler) =>
+  Bacon.fromCallback (handler) ->
     callback = (err, written, innerBuffer) ->
       if err
         handler(new Bacon.Error(err))
@@ -52,7 +53,7 @@ Bacon.FS.write = (fd, buffer, offset, length, position, callback) ->
     #fs.write makes callback undefined when raw string data is passed 
     buffer = new Buffer(buffer) unless Buffer.isBuffer(buffer)
     fs.write(fd, buffer, offset, buffer.length, position, callback)
-    nop
+
 
 Bacon.FS.read = (fd, buffer, offset, length, position) ->
   Bacon.fromCallback (handler) ->
@@ -63,6 +64,7 @@ Bacon.FS.read = (fd, buffer, offset, length, position) ->
         handler(new Bacon.Next({fd, bytesRead, buffer:innerBuffer}))
     fs.read(fd, buffer, offset, length, position, callback)
 
+
 Bacon.FS.watchFile = (args...) ->
   Bacon.fromBinder (handler) ->
     fs.watchFile(args..., (curr,prev) ->
@@ -70,6 +72,6 @@ Bacon.FS.watchFile = (args...) ->
     )
     nop
 
-Bacon.FS.exists = (args...) -> Bacon.fromNodeCallback(exists, args...)
-Bacon.FS.exec = (args...) -> Bacon.fromNodeCallback(exec, args...)
+Bacon.FS.exists = (args...) -> Bacon.fromNodeCallback(exists, args...).toProperty()
+Bacon.FS.exec = (args...) -> Bacon.fromNodeCallback(exec, args...).toProperty()
 module.exports = exports.Bacon
