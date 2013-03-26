@@ -29,9 +29,9 @@ Bacon.FS.open = (path, flags, mode) ->
       if err
         handler(new Bacon.Error(err))
       else
-        handler(new Bacon.Next(fd))
+        handler(fd)
     )
-    (-> fs.close(fd))
+    (-> fs.close(fd, nop))
 
 Bacon.FS.close = (fd) ->
   Bacon.fromCallback (handler) ->
@@ -39,7 +39,7 @@ Bacon.FS.close = (fd) ->
       if err
         handler(new Bacon.Error(err))
       else
-        handler(new Bacon.Next(fd))
+        handler(fd)
     )
 
 Bacon.FS.write = (fd, buffer, offset, length, position) ->
@@ -48,7 +48,7 @@ Bacon.FS.write = (fd, buffer, offset, length, position) ->
       if err
         handler(new Bacon.Error(err))
       else
-        handler(new Bacon.Next({fd, written, buffer:innerBuffer}))
+        handler({fd, written, buffer:innerBuffer})
 
     #fs.write makes callback undefined when raw string data is passed 
     buffer = new Buffer(buffer) unless Buffer.isBuffer(buffer)
@@ -61,16 +61,16 @@ Bacon.FS.read = (fd, buffer, offset, length, position) ->
       if err
         handler(new Bacon.Error(err))
       else
-        handler(new Bacon.Next({fd, bytesRead, buffer:innerBuffer}))
+        handler({fd, bytesRead, buffer:innerBuffer})
     fs.read(fd, buffer, offset, length, position, callback)
 
 
 Bacon.FS.watchFile = (args...) ->
   Bacon.fromBinder (handler) ->
     fs.watchFile(args..., (curr,prev) ->
-      handler(new Bacon.Next({curr, prev}))
+      handler({curr, prev})
     )
-    nop
+    (-> fs.unwatchFile(args..., nop))
 
 Bacon.FS.exists = (args...) -> Bacon.fromNodeCallback(exists, args...).toProperty()
 Bacon.FS.exec = (args...) -> Bacon.fromNodeCallback(exec, args...).toProperty()
