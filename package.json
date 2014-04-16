@@ -1,0 +1,22 @@
+{
+  "name": "Bacon.FS",
+  "version": "0.0.1",
+  "description": "FS Bindings for Bacon.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wolfflow/Bacon.FS"
+  },
+  "keywords": [
+    "fs",
+    "filesystem",
+    "frp",
+    "bacon.js",
+    "reactive"
+  ],
+  "author": "Daniel K",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wolfflow/Bacon.FS/issues"
+  },
+  "homepage": "https://github.com/wolfflow/Bacon.FS"
+}
